@@ -49,11 +49,21 @@ int main()
             case 3: Inserir_Valor(A); break;
             case 4: Inserir_Valor(B); break;
             case 5:
-                if (linhasA==linhasB && colunasA==colunasB) { R = Soma_Matrizes(A,B,linhasA,colunasA); Imprimir_Matriz(R); Excluir_lista(&R); }
+                if (linhasA==linhasB && colunasA==colunasB) 
+                { 
+                    R = Soma_Matrizes(A,B,linhasA,colunasA); 
+                    Imprimir_Matriz(R); 
+                    Excluir_lista(&R); 
+                }
                 else printf("Dimensoes incompativeis para soma\n");
                 break;
             case 6:
-                if (linhasA==linhasB && colunasA==colunasB) { R = Subtrai_Matrizes(A,B,linhasA,colunasA); Imprimir_Matriz(R); Excluir_lista(&R); }
+                if (linhasA==linhasB && colunasA==colunasB) 
+                { 
+                    R = Subtrai_Matrizes(A,B,linhasA,colunasA); 
+                    Imprimir_Matriz(R); 
+                    Excluir_lista(&R); 
+                }
                 else printf("Dimensoes incompativeis para subtracao\n");
                 break;
             // case 7:
