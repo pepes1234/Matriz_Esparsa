@@ -14,7 +14,6 @@ void Insere_fim(Matriz_Esparsa **matriz, Matriz_Esparsa *nodo);
 float Pesquisa(Matriz_Esparsa *matriz, int lin, int col);
 void Excluir_lista(Matriz_Esparsa **matriz);
 void Inserir_lista(Matriz_Esparsa **matriz);
-void Ler_Matriz(Matriz_Esparsa *matriz);
 void Inserir_Valor(Matriz_Esparsa *matriz);
 Matriz_Esparsa *Soma_Matrizes(Matriz_Esparsa *matriz1, Matriz_Esparsa *matriz2, int tamanhoI, int tamanhoJ);
 Matriz_Esparsa *Subtrai_Matrizes(Matriz_Esparsa *matriz1, Matriz_Esparsa *matriz2, int tamanhoI, int tamanhoJ);
@@ -175,53 +174,14 @@ void Inserir_lista(Matriz_Esparsa **matriz)
     printf("Digite o numero de colunas: ");
     scanf("%d", &colunas);
     define_dimensoes(*matriz, linhas, colunas);
-    Ler_Matriz(*matriz);
-}
-
-void Ler_Matriz(Matriz_Esparsa *matriz)
-{
-    if (!matriz) return;
-    int lin, col, linhas, colunas;
-    float valor;
-    obtem_dimensoes(matriz, &linhas, &colunas);
-
-    printf("Digite os valores (0 em linha para parar):\n");
-    while (1)
-    {
-        printf("lin: ");
-        scanf("%d", &lin);
-        if (lin == 0) break;
-
-        printf("col: ");
-        scanf("%d", &col);
-        printf("valor: ");
-        scanf("%f", &valor);
-
-        if (lin < 0 || lin >= linhas || col < 0 || col >= colunas)
-        {
-            printf("Posicao invalida! Digite dentro dos limites (0-%d, 0-%d)\n", linhas - 1, colunas - 1);
-            continue;
-        }
-
-        if (valor != 0.0f)
-        {
-            Matriz_Esparsa *n = Cria_Nodo();
-            n->dado = valor;
-            n->lin = lin;
-            n->col = col;
-            n->prox = NULL;
-            Insere_fim(&matriz, n);
-        }
-    }
+    Inserir_Valor(*matriz);
 }
 
 void Inserir_Valor(Matriz_Esparsa *matriz)
 {
+    if (!matriz) return;
     int lin, col, linhas, colunas;
     float valor;
-
-    if (!matriz) return;
-
     obtem_dimensoes(matriz, &linhas, &colunas);
 
     printf("Digite os valores (0 em linha para parar):\n");
@@ -256,7 +216,10 @@ void Inserir_Valor(Matriz_Esparsa *matriz)
 
 Matriz_Esparsa *Soma_Matrizes(Matriz_Esparsa *m1, Matriz_Esparsa *m2, int tamanhoI, int tamanhoJ)
 {
-    Matriz_Esparsa *res = NULL; Inicializa(&res); define_dimensoes(res, tamanhoI, tamanhoJ);
+    Matriz_Esparsa *res = NULL; 
+    Inicializa(&res); 
+    define_dimensoes(res, tamanhoI, tamanhoJ);
+
     for (int i = 0; i < tamanhoI; ++i)
         for (int j = 0; j < tamanhoJ; ++j)
         {
@@ -275,7 +238,10 @@ Matriz_Esparsa *Soma_Matrizes(Matriz_Esparsa *m1, Matriz_Esparsa *m2, int tamanh
 
 Matriz_Esparsa *Subtrai_Matrizes(Matriz_Esparsa *m1, Matriz_Esparsa *m2, int tamanhoI, int tamanhoJ)
 {
-    Matriz_Esparsa *res = NULL; Inicializa(&res); define_dimensoes(res, tamanhoI, tamanhoJ);
+    Matriz_Esparsa *res = NULL; 
+    Inicializa(&res); 
+    define_dimensoes(res, tamanhoI, tamanhoJ);
+    
     for (int i = 0; i < tamanhoI; ++i)
         for (int j = 0; j < tamanhoJ; ++j)
         {
