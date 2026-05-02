@@ -70,7 +70,7 @@ int main()
             //     else printf("Dimensoes incompativeis para multiplicacao\n");
             //     break;
             // case 8: R = Matriz_Transposta(A, linhasA, colunasA); Imprimir_Matriz(R); Excluir_lista(&R); break;
-            // case 9: Imprimir_Diagonal_Principal(A); break;
+            case 9: Imprimir_Diagonal_Principal(A); break;
             case 10: break;
             default: printf("Opcao invalida\n");
         }
@@ -241,7 +241,7 @@ Matriz_Esparsa *Subtrai_Matrizes(Matriz_Esparsa *m1, Matriz_Esparsa *m2, int tam
     Matriz_Esparsa *res = NULL; 
     Inicializa(&res); 
     define_dimensoes(res, tamanhoI, tamanhoJ);
-    
+
     for (int i = 0; i < tamanhoI; ++i)
         for (int j = 0; j < tamanhoJ; ++j)
         {
@@ -257,4 +257,17 @@ Matriz_Esparsa *Subtrai_Matrizes(Matriz_Esparsa *m1, Matriz_Esparsa *m2, int tam
             }
         }
     return res;
+}
+
+void Imprimir_Diagonal_Principal(Matriz_Esparsa *matriz)
+{
+    if (!matriz) return; 
+    int linhas, colunas; 
+    obtem_dimensoes(matriz, &linhas, &colunas);
+    int limite = linhas < colunas ? linhas : colunas; 
+    for (int i = 0; i < limite; ++i) 
+    {
+        printf("%.2f ", Pesquisa(matriz, i, i)); 
+        printf("\n");
+    }
 }
