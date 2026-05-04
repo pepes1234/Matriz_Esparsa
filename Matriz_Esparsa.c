@@ -24,7 +24,7 @@ void cria_matriz(Lista_Matrizes **lista);
 void insere_lista(Lista_Matrizes **lista, Lista_Matrizes *nova);
 void insere_valor(int linha, int coluna, float valor, Matriz_Esparsa **matriz);
 void imprime_matriz(Lista_Matrizes *lista);
-void imprimir_diagonal_principal(Lista_Matrizes *lista, int id);
+void imprime_diagonal_principal(Lista_Matrizes *lista);
 void excluir_matriz(Lista_Matrizes **lista);
 void excluir_lista(Lista_Matrizes **lista);
 
@@ -68,7 +68,15 @@ int main()
                     pausa();
                 }
                 break;
-            
+            case 3:
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                    pausa();
+                } else {
+                    imprime_diagonal_principal(lista);
+                    pausa();
+                }
+                break;
         }
     } while (opc != 9);
     return 0;
@@ -176,6 +184,30 @@ void imprime_matriz(Lista_Matrizes *lista) {
         }
         printf("\n");
     }
+}
+
+void imprime_diagonal_principal(Lista_Matrizes *lista) {
+    int id;
+    printf("Digite o id da matriz para imprimir a diagonal principal: ");
+    scanf("%d", &id);
+    Lista_Matrizes *matriz = pesquisa_matriz(lista, id);
+    if (matriz == NULL) {
+        printf("\nMatriz com id %d nao encontrada!\n", id);
+        return;
+    } else if (matriz->t_linhas != matriz->t_colunas) {
+        printf("\nMatriz com id %d nao e quadrada, nao possui diagonal principal!\n", id);
+        return;
+    }
+    printf("Diagonal principal da matriz %dx%d (id: %d):\n", matriz->t_linhas, matriz->t_colunas, matriz->id);
+    for (int i = 1; i <= matriz->t_linhas && i <= matriz->t_colunas; i++) {
+        Matriz_Esparsa *elemento = pesquisa_posicao(matriz->inicio, i, i);
+        if (elemento != NULL) {
+            printf("%.2f\t", elemento->dado);
+        } else {
+            printf("0.00\t");
+        }
+    }
+    printf("\n");
 }
 
 Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id) {
