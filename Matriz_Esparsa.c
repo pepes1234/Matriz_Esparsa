@@ -16,13 +16,14 @@ typedef struct matriz
     struct matriz *prox;
 } Lista_Matrizes;
 
-int id = 0;
+int id = 1;
 
 Matriz_Esparsa *Cria_Nodo();
-void insere_fim(int linha, int coluna, float valor, Matriz_Esparsa **matriz);
-void inserir_lista(Lista_Matrizes **lista, Lista_Matrizes *nova);
-void cria_matriz(int linhas, int colunas, Lista_Matrizes **lista);
-void imprimir_matriz(Lista_Matrizes *lista, int id);
+Lista_Matrizes *Cria_Nodo_Matriz();
+void cria_matriz(Lista_Matrizes **lista);
+void insere_lista(Lista_Matrizes **lista, Lista_Matrizes *nova);
+void insere_valor(int linha, int coluna, float valor, Matriz_Esparsa **matriz);
+void imprime_matriz(Lista_Matrizes *lista);
 void imprimir_diagonal_principal(Lista_Matrizes *lista, int id);
 void excluir_matriz(Lista_Matrizes **lista);
 void excluir_lista(Lista_Matrizes **lista);
@@ -34,13 +35,15 @@ Matriz_Esparsa *Matriz_Transposta(Lista_Matrizes **lista, int id);
 
 Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id);
 Matriz_Esparsa *pesquisa_posicao(Matriz_Esparsa *matriz, int linha, int coluna);
+void pausa();
 
 int main()
 {
     Lista_Matrizes *lista = NULL;
     int opc;
     do {
-        printf("\n1-Inserir uma matriz\n");
+        printf("\n=== Menu ===\n");
+        printf("1-Inserir uma matriz\n");
         printf("2-Imprimir uma matriz\n");
         printf("3-Imprimir a diagonal principal de uma matriz\n");
         printf("4-Excluir uma matriz\n");
@@ -53,12 +56,17 @@ int main()
         scanf("%d", &opc);
         switch (opc) {
             case 1:
+                cria_matriz(&lista);
+                pausa();
                 break;
             case 2:
-                int id_m;
-                printf("Digite o id da matriz a ser impressa: ");
-                scanf("%d", &id_m);
-                imprimir_matriz(lista, id_m);
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                    pausa();
+                } else {
+                    imprime_matriz(lista);
+                    pausa();
+                }
                 break;
             
         }
@@ -73,4 +81,126 @@ Matriz_Esparsa *Cria_Nodo() {
         exit(0); 
     }
     return p;
+}
+
+Lista_Matrizes *Cria_Nodo_Matriz() {
+    Lista_Matrizes *p = (Lista_Matrizes*) malloc(sizeof(Lista_Matrizes));
+    if (!p){
+        printf("Problema de alocacao\n"); 
+        exit(0); 
+    }
+    return p;
+}
+
+void cria_matriz(Lista_Matrizes **lista) {
+    Lista_Matrizes *nova = Cria_Nodo_Matriz();
+    nova->id = id++;
+    printf("Digite o numero de linhas da matriz: ");
+    scanf("%d", &nova->t_linhas);
+    printf("Digite o numero de colunas da matriz: ");
+    scanf("%d", &nova->t_colunas);
+    nova->inicio = NULL;
+    nova->prox = NULL;
+    insere_lista(lista, nova);
+    int linha, coluna;
+    float valor;
+    do {
+        printf("Digite a linha(1-%d) do elemento(0 para finalizar): ", nova->t_linhas);
+        scanf("%d", &linha);
+        if (linha > 0 && linha <= nova->t_linhas) {
+            printf("Digite a coluna(1-%d) do elemento: ", nova->t_colunas);
+            scanf("%d", &coluna);
+            if (coluna > 0 && coluna <= nova->t_colunas) {
+                printf("Digite o valor do elemento: ");
+                scanf("%f", &valor);
+                insere_valor(linha, coluna, valor, &nova->inicio);
+            } else {
+                printf("Coluna invalida!\n");
+            }
+        } else {
+            if (linha != 0) {
+                printf("Linha invalida!\n");
+            }
+        }
+    } while (linha != 0);
+    printf("\nMatriz %dx%d criada com id: %d\n", nova->t_linhas, nova->t_colunas, nova->id);
+}
+
+void insere_lista(Lista_Matrizes **lista, Lista_Matrizes *nova) {
+    if (*lista == NULL) {
+        *lista = nova;
+    } else {
+        Lista_Matrizes *aux = *lista;
+        while (aux->prox != NULL) {
+            aux = aux->prox;
+        }
+        aux->prox = nova;
+    }
+}
+
+void insere_valor(int linha, int coluna, float valor, Matriz_Esparsa **matriz) {
+    Matriz_Esparsa *novo = Cria_Nodo();
+    novo->lin = linha;
+    novo->col = coluna;
+    novo->dado = valor;
+    novo->prox = NULL;
+    if (*matriz == NULL) {
+        *matriz = novo;
+    } else {
+        Matriz_Esparsa *aux = *matriz;
+        while (aux->prox != NULL) {
+            aux = aux->prox;
+        }
+        aux->prox = novo;
+    }
+}
+
+void imprime_matriz(Lista_Matrizes *lista) {
+    int id;
+    printf("Digite o id da matriz a ser impressa: ");
+    scanf("%d", &id);
+    Lista_Matrizes *matriz = pesquisa_matriz(lista, id);
+    if (matriz == NULL) {
+        printf("\nMatriz com id %d nao encontrada!\n", id);
+        return;
+    }
+    printf("Matriz %dx%d (id: %d):\n", matriz->t_linhas, matriz->t_colunas, matriz->id);
+    for (int i = 1; i <= matriz->t_linhas; i++) {
+        for (int j = 1; j <= matriz->t_colunas; j++) {
+            Matriz_Esparsa *elemento = pesquisa_posicao(matriz->inicio, i, j);
+            if (elemento != NULL) {
+                printf("%.2f\t", elemento->dado);
+            } else {
+                printf("0.00\t");
+            }
+        }
+        printf("\n");
+    }
+}
+
+Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id) {
+    Lista_Matrizes *aux = lista;
+    while (aux != NULL) {
+        if (aux->id == id) {
+            return aux;
+        }
+        aux = aux->prox;
+    }
+    return NULL;
+}
+
+Matriz_Esparsa *pesquisa_posicao(Matriz_Esparsa *matriz, int linha, int coluna) {
+    Matriz_Esparsa *aux = matriz;
+    while (aux != NULL) {
+        if (aux->lin == linha && aux->col == coluna) {
+            return aux;
+        }
+        aux = aux->prox;
+    }
+    return NULL;
+}
+
+void pausa() {
+    printf("\nPressione 1 para continuar...");
+    scanf("%d");
 }
