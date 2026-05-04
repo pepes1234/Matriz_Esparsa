@@ -25,9 +25,9 @@ void insere_lista(Lista_Matrizes **lista, Lista_Matrizes *nova);
 void insere_valor(int linha, int coluna, float valor, Matriz_Esparsa **matriz);
 void imprime_matriz_dados(Lista_Matrizes *matriz);
 void imprime_matriz(Lista_Matrizes *lista);
-void imprimir_diagonal_principal(Lista_Matrizes *lista, int id);
-void excluir_matriz(Lista_Matrizes **lista);
-void excluir_lista(Lista_Matrizes **lista);
+void imprime_diagonal_principal(Lista_Matrizes *lista);
+void exclui_matriz(Lista_Matrizes **lista);
+void exclui_lista(Lista_Matrizes **lista);
 
 void Soma_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
 void Subtrai_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
@@ -44,7 +44,7 @@ int main()
     int opc;
     do {
         printf("\n=== Menu ===\n");
-        printf("1-Inserir uma matriz\n");
+        printf("1-Adicionar uma matriz\n");
         printf("2-Imprimir uma matriz\n");
         printf("3-Imprimir a diagonal principal de uma matriz\n");
         printf("4-Excluir uma matriz\n");
@@ -68,64 +68,11 @@ int main()
                     imprime_matriz(lista);
                     pausa();
                 }
-            break;
-            case 5: {
-                int id_m1, id_m2;
-                if (lista == NULL) {
-                    printf("\nNenhuma matriz cadastrada!\n");
-                } else {
-                    printf("Digite o id da primeira matriz: ");
-                    scanf("%d", &id_m1);
-                    printf("Digite o id da segunda matriz: ");
-                    scanf("%d", &id_m2);
-                    Soma_Matrizes(&lista, id_m1, id_m2);
-                }
-                pausa();
-            }
-            break;
-            case 6: {
-                int id_m1, id_m2;
-                if (lista == NULL) {
-                    printf("\nNenhuma matriz cadastrada!\n");
-                } else {
-                    printf("Digite o id da primeira matriz: ");
-                    scanf("%d", &id_m1);
-                    printf("Digite o id da segunda matriz: ");
-                    scanf("%d", &id_m2);
-                    Subtrai_Matrizes(&lista, id_m1, id_m2);
-                }
-                pausa();
-            }
-            break;
-            case 7: {
-                int id_m1, id_m2;
-                if (lista == NULL) {
-                    printf("\nNenhuma matriz cadastrada!\n");
-                } else {
-                    printf("Digite o id da primeira matriz: ");
-                    scanf("%d", &id_m1);
-                    printf("Digite o id da segunda matriz: ");
-                    scanf("%d", &id_m2);
-                    Multiplica_Matrizes(&lista, id_m1, id_m2);
-                }
-                pausa();
-            }
-            break;
-            case 8: {
-                int id_m1;
-                if (lista == NULL) {
-                    printf("\nNenhuma matriz cadastrada!\n");
-                } else {
-                    printf("Digite o id da matriz a ser transposta: ");
-                    scanf("%d", &id_m1);
-                    Matriz_Transposta(&lista, id_m1);
-                }
-                pausa();
-            }
-            break;
+                break;
             
         }
     } while (opc != 9);
+    exclui_lista(&lista);
     return 0;
 }
 
@@ -227,18 +174,6 @@ void imprime_matriz_dados(Lista_Matrizes *matriz) {
         }
         printf("\n");
     }
-}
-
-void imprime_matriz(Lista_Matrizes *lista) {
-    int id;
-    printf("Digite o id da matriz a ser impressa: ");
-    scanf("%d", &id);
-    Lista_Matrizes *matriz = pesquisa_matriz(lista, id);
-    if (matriz == NULL) {
-        printf("\nMatriz com id %d nao encontrada!\n", id);
-        return;
-    }
-    imprime_matriz_dados(matriz);
 }
 
 Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id) {
