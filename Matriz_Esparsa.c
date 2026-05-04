@@ -186,7 +186,7 @@ void cria_matriz(Lista_Matrizes **lista) {
             if (coluna > 0 && coluna <= nova->t_colunas) {
                 printf("Digite o valor do elemento: ");
                 scanf("%f", &valor);
-                insere_valor(linha, coluna, valor, &nova->inicio);
+                if (valor != 0.0f) insere_valor(linha, coluna, valor, &nova->inicio);
             } else {
                 printf("Coluna invalida!\n");
             }
