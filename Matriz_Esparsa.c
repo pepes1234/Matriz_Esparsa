@@ -25,8 +25,8 @@ void insere_lista(Lista_Matrizes **lista, Lista_Matrizes *nova);
 void insere_valor(int linha, int coluna, float valor, Matriz_Esparsa **matriz);
 void imprime_matriz(Lista_Matrizes *lista);
 void imprime_diagonal_principal(Lista_Matrizes *lista);
-void excluir_matriz(Lista_Matrizes **lista);
-void excluir_lista(Lista_Matrizes **lista);
+void exclui_matriz(Lista_Matrizes **lista);
+void exclui_lista(Lista_Matrizes **lista);
 
 Matriz_Esparsa *Soma_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
 Matriz_Esparsa *Subtrai_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
@@ -43,7 +43,7 @@ int main()
     int opc;
     do {
         printf("\n=== Menu ===\n");
-        printf("1-Inserir uma matriz\n");
+        printf("1-Adicionar uma matriz\n");
         printf("2-Imprimir uma matriz\n");
         printf("3-Imprimir a diagonal principal de uma matriz\n");
         printf("4-Excluir uma matriz\n");
@@ -77,8 +77,18 @@ int main()
                     pausa();
                 }
                 break;
+            case 4:
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                    pausa();
+                } else {
+                    exclui_matriz(&lista);
+                    pausa();
+                }
+                break;
         }
     } while (opc != 9);
+    exclui_lista(&lista);
     return 0;
 }
 
@@ -208,6 +218,50 @@ void imprime_diagonal_principal(Lista_Matrizes *lista) {
         }
     }
     printf("\n");
+}
+
+void exclui_matriz(Lista_Matrizes **lista) {
+    int id;
+    printf("Digite o id da matriz a ser excluida: ");
+    scanf("%d", &id);
+    Lista_Matrizes *aux = *lista, *ant = NULL;
+    while (aux != NULL && aux->id != id) {
+        ant = aux;
+        aux = aux->prox;
+    }
+    if (aux == NULL) {
+        printf("\nMatriz com id %d nao encontrada!\n", id);
+        return;
+    }
+    if (ant == NULL) {
+        *lista = aux->prox;
+    } else {
+        ant->prox = aux->prox;
+    }
+    Matriz_Esparsa *elemento = aux->inicio, *temp;
+    while (elemento != NULL) {
+        temp = elemento;
+        elemento = elemento->prox;
+        free(temp);
+    }
+    free(aux);
+    printf("\nMatriz com id %d excluida com sucesso!\n", id);
+}
+
+void exclui_lista(Lista_Matrizes **lista) {
+    Lista_Matrizes *aux = *lista, *temp;
+    while (aux != NULL) {
+        temp = aux;
+        aux = aux->prox;
+        Matriz_Esparsa *elemento = temp->inicio, *temp_elemento;
+        while (elemento != NULL) {
+            temp_elemento = elemento;
+            elemento = elemento->prox;
+            free(temp_elemento);
+        }
+        free(temp);
+    }
+    *lista = NULL;
 }
 
 Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id) {
