@@ -44,7 +44,7 @@ int main()
     int opc;
     do {
         printf("\n=== Menu ===\n");
-        printf("1-Adicionar uma matriz\n");
+        printf("1-Inserir uma matriz\n");
         printf("2-Imprimir uma matriz\n");
         printf("3-Imprimir a diagonal principal de uma matriz\n");
         printf("4-Excluir uma matriz\n");
@@ -68,11 +68,82 @@ int main()
                     imprime_matriz(lista);
                     pausa();
                 }
-                break;
+            break;
+            case 3:
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                    pausa();
+                } else {
+                    imprime_diagonal_principal(lista);
+                    pausa();
+                }
+            break;
+            case 4:
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                    pausa();
+                } else {
+                    exclui_matriz(&lista);
+                    pausa();
+                }
+            break;
+            case 5: {
+                int id_m1, id_m2;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da primeira matriz: ");
+                    scanf("%d", &id_m1);
+                    printf("Digite o id da segunda matriz: ");
+                    scanf("%d", &id_m2);
+                    Soma_Matrizes(&lista, id_m1, id_m2);
+                }
+                pausa();
+            }
+            break;
+            case 6: {
+                int id_m1, id_m2;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da primeira matriz: ");
+                    scanf("%d", &id_m1);
+                    printf("Digite o id da segunda matriz: ");
+                    scanf("%d", &id_m2);
+                    Subtrai_Matrizes(&lista, id_m1, id_m2);
+                }
+                pausa();
+            }
+            break;
+            case 7: {
+                int id_m1, id_m2;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da primeira matriz: ");
+                    scanf("%d", &id_m1);
+                    printf("Digite o id da segunda matriz: ");
+                    scanf("%d", &id_m2);
+                    Multiplica_Matrizes(&lista, id_m1, id_m2);
+                }
+                pausa();
+            }
+            break;
+            case 8: {
+                int id_m1;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da matriz a ser transposta: ");
+                    scanf("%d", &id_m1);
+                    Matriz_Transposta(&lista, id_m1);
+                }
+                pausa();
+            }
+            break;
             
         }
     } while (opc != 9);
-    exclui_lista(&lista);
     return 0;
 }
 
@@ -174,6 +245,18 @@ void imprime_matriz_dados(Lista_Matrizes *matriz) {
         }
         printf("\n");
     }
+}
+
+void imprime_matriz(Lista_Matrizes *lista) {
+    int id;
+    printf("Digite o id da matriz a ser impressa: ");
+    scanf("%d", &id);
+    Lista_Matrizes *matriz = pesquisa_matriz(lista, id);
+    if (matriz == NULL) {
+        printf("\nMatriz com id %d nao encontrada!\n", id);
+        return;
+    }
+    imprime_matriz_dados(matriz);
 }
 
 Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id) {
@@ -319,12 +402,12 @@ void Multiplica_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2) {
     Lista_Matrizes *m2 = pesquisa_matriz(*lista, id_m2);
 
     if (m1 == NULL || m2 == NULL) {
-        printf("\nMatriz não encontrada\n");
+        printf("\nUma ou ambas as matrizes nao foram encontradas!\n");
         return;
     }
 
     if (m1->t_colunas != m2->t_linhas) {
-        printf("\nNumero de colunas da primeira matriz diferente do numero de linhas da segunda\n");
+        printf("\nNumero de colunas da primeira matriz diferente do numero de linhas da segunda!\n");
         return;
     }
 
@@ -375,7 +458,7 @@ void Matriz_Transposta(Lista_Matrizes **lista, int id_m1) {
     Lista_Matrizes *m1 = pesquisa_matriz(*lista, id_m1);
 
     if (m1 == NULL) {
-        printf("\nMatriz nao encontrada\n");
+        printf("\nMatriz nao encontrada!\n");
         return;
     }
 
@@ -413,7 +496,76 @@ void Matriz_Transposta(Lista_Matrizes **lista, int id_m1) {
     imprime_matriz_dados(nova);
 }
 
+void imprime_diagonal_principal(Lista_Matrizes *lista) {
+    int id;
+    printf("Digite o id da matriz para imprimir a diagonal principal: ");
+    scanf("%d", &id);
+    Lista_Matrizes *matriz = pesquisa_matriz(lista, id);
+    if (matriz == NULL) {
+        printf("\nMatriz com id %d nao encontrada!\n", id);
+        return;
+    } else if (matriz->t_linhas != matriz->t_colunas) {
+        printf("\nMatriz com id %d nao e quadrada, nao possui diagonal principal!\n", id);
+        return;
+    }
+    printf("Diagonal principal da matriz %dx%d (id: %d):\n", matriz->t_linhas, matriz->t_colunas, matriz->id);
+    for (int i = 1; i <= matriz->t_linhas && i <= matriz->t_colunas; i++) {
+        Matriz_Esparsa *elemento = pesquisa_posicao(matriz->inicio, i, i);
+        if (elemento != NULL) {
+            printf("%.2f\t", elemento->dado);
+        } else {
+            printf("0.00\t");
+        }
+    }
+    printf("\n");
+}
+
+void exclui_matriz(Lista_Matrizes **lista) {
+    int id;
+    printf("Digite o id da matriz a ser excluida: ");
+    scanf("%d", &id);
+    Lista_Matrizes *aux = *lista, *ant = NULL;
+    while (aux != NULL && aux->id != id) {
+        ant = aux;
+        aux = aux->prox;
+    }
+    if (aux == NULL) {
+        printf("\nMatriz com id %d nao encontrada!\n", id);
+        return;
+    }
+    if (ant == NULL) {
+        *lista = aux->prox;
+    } else {
+        ant->prox = aux->prox;
+    }
+    Matriz_Esparsa *elemento = aux->inicio, *temp;
+    while (elemento != NULL) {
+        temp = elemento;
+        elemento = elemento->prox;
+        free(temp);
+    }
+    free(aux);
+    printf("\nMatriz com id %d excluida com sucesso!\n", id);
+}
+
+void exclui_lista(Lista_Matrizes **lista) {
+    Lista_Matrizes *aux = *lista, *temp;
+    while (aux != NULL) {
+        temp = aux;
+        aux = aux->prox;
+        Matriz_Esparsa *elemento = temp->inicio, *temp_elemento;
+        while (elemento != NULL) {
+            temp_elemento = elemento;
+            elemento = elemento->prox;
+            free(temp_elemento);
+        }
+        free(temp);
+    }
+    *lista = NULL;
+}
+
 void pausa() {
+    int continuar;
     printf("\nPressione 1 para continuar...");
-    scanf("%d");
+    scanf("%d", &continuar);
 }
