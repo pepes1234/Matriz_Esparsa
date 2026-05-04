@@ -23,15 +23,16 @@ Lista_Matrizes *Cria_Nodo_Matriz();
 void cria_matriz(Lista_Matrizes **lista);
 void insere_lista(Lista_Matrizes **lista, Lista_Matrizes *nova);
 void insere_valor(int linha, int coluna, float valor, Matriz_Esparsa **matriz);
+void imprime_matriz_dados(Lista_Matrizes *matriz);
 void imprime_matriz(Lista_Matrizes *lista);
 void imprimir_diagonal_principal(Lista_Matrizes *lista, int id);
 void excluir_matriz(Lista_Matrizes **lista);
 void excluir_lista(Lista_Matrizes **lista);
 
-Matriz_Esparsa *Soma_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
-Matriz_Esparsa *Subtrai_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
-Matriz_Esparsa *Multiplica_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
-Matriz_Esparsa *Matriz_Transposta(Lista_Matrizes **lista, int id);
+void Soma_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
+void Subtrai_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
+void Multiplica_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2);
+void Matriz_Transposta(Lista_Matrizes **lista, int id_m1);
 
 Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id);
 Matriz_Esparsa *pesquisa_posicao(Matriz_Esparsa *matriz, int linha, int coluna);
@@ -58,7 +59,7 @@ int main()
             case 1:
                 cria_matriz(&lista);
                 pausa();
-                break;
+            break;
             case 2:
                 if (lista == NULL) {
                     printf("\nNenhuma matriz cadastrada!\n");
@@ -67,7 +68,61 @@ int main()
                     imprime_matriz(lista);
                     pausa();
                 }
-                break;
+            break;
+            case 5: {
+                int id_m1, id_m2;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da primeira matriz: ");
+                    scanf("%d", &id_m1);
+                    printf("Digite o id da segunda matriz: ");
+                    scanf("%d", &id_m2);
+                    Soma_Matrizes(&lista, id_m1, id_m2);
+                }
+                pausa();
+            }
+            break;
+            case 6: {
+                int id_m1, id_m2;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da primeira matriz: ");
+                    scanf("%d", &id_m1);
+                    printf("Digite o id da segunda matriz: ");
+                    scanf("%d", &id_m2);
+                    Subtrai_Matrizes(&lista, id_m1, id_m2);
+                }
+                pausa();
+            }
+            break;
+            case 7: {
+                int id_m1, id_m2;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da primeira matriz: ");
+                    scanf("%d", &id_m1);
+                    printf("Digite o id da segunda matriz: ");
+                    scanf("%d", &id_m2);
+                    Multiplica_Matrizes(&lista, id_m1, id_m2);
+                }
+                pausa();
+            }
+            break;
+            case 8: {
+                int id_m1;
+                if (lista == NULL) {
+                    printf("\nNenhuma matriz cadastrada!\n");
+                } else {
+                    printf("Digite o id da matriz a ser transposta: ");
+                    scanf("%d", &id_m1);
+                    Matriz_Transposta(&lista, id_m1);
+                }
+                pausa();
+            }
+            break;
             
         }
     } while (opc != 9);
@@ -155,15 +210,11 @@ void insere_valor(int linha, int coluna, float valor, Matriz_Esparsa **matriz) {
     }
 }
 
-void imprime_matriz(Lista_Matrizes *lista) {
-    int id;
-    printf("Digite o id da matriz a ser impressa: ");
-    scanf("%d", &id);
-    Lista_Matrizes *matriz = pesquisa_matriz(lista, id);
+void imprime_matriz_dados(Lista_Matrizes *matriz) {
     if (matriz == NULL) {
-        printf("\nMatriz com id %d nao encontrada!\n", id);
         return;
     }
+
     printf("Matriz %dx%d (id: %d):\n", matriz->t_linhas, matriz->t_colunas, matriz->id);
     for (int i = 1; i <= matriz->t_linhas; i++) {
         for (int j = 1; j <= matriz->t_colunas; j++) {
@@ -176,6 +227,18 @@ void imprime_matriz(Lista_Matrizes *lista) {
         }
         printf("\n");
     }
+}
+
+void imprime_matriz(Lista_Matrizes *lista) {
+    int id;
+    printf("Digite o id da matriz a ser impressa: ");
+    scanf("%d", &id);
+    Lista_Matrizes *matriz = pesquisa_matriz(lista, id);
+    if (matriz == NULL) {
+        printf("\nMatriz com id %d nao encontrada!\n", id);
+        return;
+    }
+    imprime_matriz_dados(matriz);
 }
 
 Lista_Matrizes *pesquisa_matriz(Lista_Matrizes *lista, int id) {
@@ -198,6 +261,221 @@ Matriz_Esparsa *pesquisa_posicao(Matriz_Esparsa *matriz, int linha, int coluna) 
         aux = aux->prox;
     }
     return NULL;
+}
+
+void Soma_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2) {
+    Lista_Matrizes *m1 = pesquisa_matriz(*lista, id_m1);
+    Lista_Matrizes *m2 = pesquisa_matriz(*lista, id_m2);
+
+    if (m1 == NULL || m2 == NULL) {
+        printf("\nMatriz não encontrada\n");
+        return;
+    }
+
+    if (m1->t_linhas != m2->t_linhas || m1->t_colunas != m2->t_colunas) {
+        printf("\nMatrizes de tamanho diferente\n");
+        return;
+    }
+
+    Lista_Matrizes *nova = Cria_Nodo_Matriz();
+    nova->id = id++;
+    nova->t_linhas = m1->t_linhas;
+    nova->t_colunas = m1->t_colunas;
+    nova->inicio = NULL;
+    nova->prox = NULL;
+
+    Matriz_Esparsa *ultimo = NULL;
+
+    for (int i = 1; i <= m1->t_linhas; ++i) {
+        for (int j = 1; j <= m1->t_colunas; ++j) {
+            Matriz_Esparsa *e1 = pesquisa_posicao(m1->inicio, i, j);
+            Matriz_Esparsa *e2 = pesquisa_posicao(m2->inicio, i, j);
+            float v = 0.0f;
+
+            if (e1 != NULL) {
+                v += e1->dado;
+            }
+            if (e2 != NULL) {
+                v += e2->dado;
+            }
+
+            if (v != 0.0f) {
+                Matriz_Esparsa *n = Cria_Nodo();
+                n->dado = v;
+                n->lin = i;
+                n->col = j;
+                n->prox = NULL;
+
+                if (nova->inicio == NULL) {
+                    nova->inicio = n;
+                } else {
+                    ultimo->prox = n;
+                }
+                ultimo = n;
+            }
+        }
+    }
+
+    insere_lista(lista, nova);
+
+    imprime_matriz_dados(nova);
+}
+
+void Subtrai_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2) {
+    Lista_Matrizes *m1 = pesquisa_matriz(*lista, id_m1);
+    Lista_Matrizes *m2 = pesquisa_matriz(*lista, id_m2);
+
+    if (m1 == NULL || m2 == NULL) {
+        printf("\nUma ou ambas as matrizes nao foram encontradas!\n");
+        return;
+    }
+
+    if (m1->t_linhas != m2->t_linhas || m1->t_colunas != m2->t_colunas) {
+        printf("\nAs matrizes precisam ter as mesmas dimensoes para subtrair!\n");
+        return;
+    }
+
+    Lista_Matrizes *nova = Cria_Nodo_Matriz();
+    nova->id = id++;
+    nova->t_linhas = m1->t_linhas;
+    nova->t_colunas = m1->t_colunas;
+    nova->inicio = NULL;
+    nova->prox = NULL;
+
+    Matriz_Esparsa *ultimo = NULL;
+
+    for (int i = 1; i <= m1->t_linhas; ++i) {
+        for (int j = 1; j <= m1->t_colunas; ++j) {
+            Matriz_Esparsa *e1 = pesquisa_posicao(m1->inicio, i, j);
+            Matriz_Esparsa *e2 = pesquisa_posicao(m2->inicio, i, j);
+            float v = 0.0f;
+
+            if (e1 != NULL) {
+                v += e1->dado;
+            }
+            if (e2 != NULL) {
+                v -= e2->dado;
+            }
+
+            if (v != 0.0f) {
+                Matriz_Esparsa *n = Cria_Nodo();
+                n->dado = v;
+                n->lin = i;
+                n->col = j;
+                n->prox = NULL;
+
+                if (nova->inicio == NULL) {
+                    nova->inicio = n;
+                } else {
+                    ultimo->prox = n;
+                }
+                ultimo = n;
+            }
+        }
+    }
+
+    insere_lista(lista, nova);
+
+    imprime_matriz_dados(nova);
+}
+
+void Multiplica_Matrizes(Lista_Matrizes **lista, int id_m1, int id_m2) {
+    Lista_Matrizes *m1 = pesquisa_matriz(*lista, id_m1);
+    Lista_Matrizes *m2 = pesquisa_matriz(*lista, id_m2);
+
+    if (m1 == NULL || m2 == NULL) {
+        printf("\nMatriz não encontrada\n");
+        return;
+    }
+
+    if (m1->t_colunas != m2->t_linhas) {
+        printf("\nNumero de colunas da primeira matriz diferente do numero de linhas da segunda\n");
+        return;
+    }
+
+    Lista_Matrizes *nova = Cria_Nodo_Matriz();
+    nova->id = id++;
+    nova->t_linhas = m1->t_linhas;
+    nova->t_colunas = m2->t_colunas;
+    nova->inicio = NULL;
+    nova->prox = NULL;
+
+    Matriz_Esparsa *ultimo = NULL;
+
+    for (int i = 1; i <= nova->t_linhas; ++i) {
+        for (int j = 1; j <= nova->t_colunas; ++j) {
+            float soma = 0.0f;
+
+            for (int k = 1; k <= m1->t_colunas; ++k) {
+                Matriz_Esparsa *e1 = pesquisa_posicao(m1->inicio, i, k);
+                Matriz_Esparsa *e2 = pesquisa_posicao(m2->inicio, k, j);
+                float v1 = (e1 != NULL) ? e1->dado : 0.0f;
+                float v2 = (e2 != NULL) ? e2->dado : 0.0f;
+                soma += v1 * v2;
+            }
+
+            if (soma != 0.0f) {
+                Matriz_Esparsa *n = Cria_Nodo();
+                n->dado = soma;
+                n->lin = i;
+                n->col = j;
+                n->prox = NULL;
+
+                if (nova->inicio == NULL) {
+                    nova->inicio = n;
+                } else {
+                    ultimo->prox = n;
+                }
+                ultimo = n;
+            }
+        }
+    }
+
+    insere_lista(lista, nova);
+
+    imprime_matriz_dados(nova);
+}
+
+void Matriz_Transposta(Lista_Matrizes **lista, int id_m1) {
+    Lista_Matrizes *m1 = pesquisa_matriz(*lista, id_m1);
+
+    if (m1 == NULL) {
+        printf("\nMatriz nao encontrada\n");
+        return;
+    }
+
+    Lista_Matrizes *nova = Cria_Nodo_Matriz();
+    nova->id = id++;
+    nova->t_linhas = m1->t_colunas;
+    nova->t_colunas = m1->t_linhas;
+    nova->inicio = NULL;
+    nova->prox = NULL;
+
+    Matriz_Esparsa *ultimo = NULL;
+
+    for (int i = 1; i <= m1->t_linhas; ++i) {
+        for (int j = 1; j <= m1->t_colunas; ++j) {
+            Matriz_Esparsa *elemento = pesquisa_posicao(m1->inicio, i, j);
+            if (elemento != NULL && elemento->dado != 0.0f) {
+                Matriz_Esparsa *n = Cria_Nodo();
+                n->dado = elemento->dado;
+                n->lin = j;
+                n->col = i;
+                n->prox = NULL;
+
+                if (nova->inicio == NULL) {
+                    nova->inicio = n;
+                } else {
+                    ultimo->prox = n;
+                }
+                ultimo = n;
+            }
+        }
+    }
+
+    insere_lista(lista, nova);
+
+    imprime_matriz_dados(nova);
 }
 
 void pausa() {
